@@ -1,0 +1,169 @@
+# openspec/config.yaml
+# OpenSpec configuration — Assistant Dépenses
+# https://openspec.dev/
+
+# ──────────────────────────────────────────────────────────
+# Project identity
+# ──────────────────────────────────────────────────────────
+project:
+  name: assistant-depenses
+  title: "Assistant Dépenses"
+  description: >
+    Application Laravel de suivi des expenses pour un commerçant de quartier.
+    L'utilisateur colle le texte d'un reçu fournisseur (souvent en darija,
+    mal formaté), et l'IA en extrait automatiquement les articles structurés
+    (libellé, quantité, prix, catégorie) que le backend valide, type et
+    enregistre. Le traitement IA tourne en background via une queue.
+  version: "1.0.0"
+  language: en
+  repository: ""           # fill in with your GitHub repo URL once created
+
+# ──────────────────────────────────────────────────────────
+# Tech stack — referenced by specs so agents know the
+# constraints of the environment they are generating code for
+# ──────────────────────────────────────────────────────────
+stack:
+  framework: "Laravel 11"
+  php_version: "8.3"
+  database: "MySQL 8"
+  queue_driver: "database"
+  ai_sdk: "laravel/ai"
+  ai_provider: "groq"
+  ai_model: "llama-3.3-70b-versatile"
+  auth: "Laravel Breeze (Blade)"
+  testing: "Pest PHP"
+  frontend: "Blade + Tailwind CSS"
+  debug_tooling: "barryvdh/laravel-debugbar"
+
+# ──────────────────────────────────────────────────────────
+# Directory layout — where OpenSpec reads/writes specs
+# ──────────────────────────────────────────────────────────
+paths:
+  specs_dir: "openspec/specs"
+  changes_dir: "openspec/changes"
+  proposal_file: "openspec/proposal.md"
+  agents_file: "AGENTS.md"
+
+# ──────────────────────────────────────────────────────────
+# Features tracked by OpenSpec — one spec file per feature
+# Status: draft | approved | in-progress | done
+# ──────────────────────────────────────────────────────────
+features:
+  - id: auth
+    title: "Authentication"
+    spec_file: "openspec/specs/feature-auth.md"
+    branch: "feature/auth"
+    status: draft
+    user_stories: ["US1"]
+
+  - id: receipt
+    title: "Receipt Management"
+    spec_file: "openspec/specs/feature-recus.md"
+    branch: "feature/recus"
+    status: draft
+    user_stories: ["US2", "US3", "US4", "US5"]
+
+  - id: extraction
+    title: "AI Extraction (Queue + Structured Output)"
+    spec_file: "openspec/specs/feature-extraction.md"
+    branch: "feature/extraction"
+    status: draft
+    user_stories: ["US6", "US7"]
+
+  - id: expense
+    title: "Filterable Expense List"
+    spec_file: "openspec/specs/feature-expense.md"
+    branch: "feature/expense"
+    status: draft
+    user_stories: ["US8"]
+
+  - id: image-upload
+    title: "Bonus — Image Receipt Upload"
+    spec_file: "openspec/specs/bonus-image-upload.md"
+    branch: "feature/image-upload"
+    status: draft
+    user_stories: []
+
+  - id: pest-test
+    title: "Bonus — Pest Extraction Test"
+    spec_file: "openspec/specs/bonus-pest-test.md"
+    branch: "test/pest-extraction"
+    status: draft
+    user_stories: []
+
+# ──────────────────────────────────────────────────────────
+# Hard architectural constraints — every spec and every
+# generated change MUST respect these. Non-negotiable.
+# ──────────────────────────────────────────────────────────
+constraints:
+  - id: async-ai-call
+    description: >
+      The AI/Groq call must NEVER be synchronous inside an HTTP request.
+      It must always be dispatched via the ExtraireDepensesDuRecu queue job
+      and processed by `php artisan queue:work`.
+
+  - id: form-request-validation
+    description: >
+      Receipt text validation (non-empty, min/max length) must happen in a
+      dedicated StoreRecuRequest class, before any AI call is made.
+
+  - id: eloquent-casts
+    description: >
+      `Receipt.statut` must be cast to StatutRecuEnum, `Expenses.categorie`
+      must be cast to CategorieDepenseEnum, `Recu.payload_ia` must be cast
+      to array. Raw strings for these fields are forbidden.
+
+  - id: typed-data-flow
+    description: >
+      Data must remain typed from AI extraction through to display —
+      no untyped arrays or raw JSON passed to views.
+
+  - id: eloquent-relation
+    description: >
+      Recu hasMany Depense. User hasMany Recu. Relations must be defined
+      on both sides where applicable (belongsTo / hasMany).
+
+  - id: zero-n-plus-one
+    description: >
+      All list views must eager load relations with `with()`. Laravel
+      Debugbar must report zero N+1 queries before any feature is marked done.
+
+  - id: structured-output-contract
+    description: >
+      The AI response must be validated against the ArticlesSchema JSON
+      contract (articles[], total_estime, devise) using laravel/ai's
+      structured output feature. Raw json_decode without schema is forbidden.
+
+# ──────────────────────────────────────────────────────────
+# JSON contract referenced by feature-extraction.md
+# ──────────────────────────────────────────────────────────
+json_contract:
+  name: ArticlesSchema
+  schema_file: "app/AI/Schemas/ArticlesSchema.php"
+  shape:
+    articles:
+      type: array
+      item:
+        libelle: string
+        quantite: integer
+        prix_unitaire: number
+        categorie: "enum: alimentaire | boissons | hygiene | entretien | autre"
+    total_estime: number
+    devise: "string (ex: MAD)"
+
+# ──────────────────────────────────────────────────────────
+# Workflow rules for coding agents
+# ──────────────────────────────────────────────────────────
+workflow:
+  plan_before_build: true
+  require_commit_tag: "[ai-assisted]"
+  require_tests_before_done: true
+  test_command: "php artisan test"
+
+# ──────────────────────────────────────────────────────────
+# Git branch strategy
+# ──────────────────────────────────────────────────────────
+branches:
+  main: "main"
+  feature_prefix: "feature/"
+  test_prefix: "test/"
