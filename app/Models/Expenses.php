@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Expenses extends Model
 {
-    // 
     protected $fillable = [
         'recu_id',
         'libelle',
@@ -19,9 +18,14 @@ class Expenses extends Model
 
     protected function casts(): array {
         return [
-            'category' => CategorieExpensesEnum::class,
+            'categorie' => CategorieExpensesEnum::class,
             'prix_unitaire' => 'decimal:2',
         ];
+    }
+
+    public function getPrixTotalAttribute(): float
+    {
+        return round((float) $this->quantite * (float) $this->prix_unitaire, 2);
     }
 
     // Relations

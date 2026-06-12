@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRecieptRequest;
 use App\Enums\StatutReceiptEnum;
+use App\Jobs\ExtraireDepensesDuRecu;
 use Illuminate\Contracts\View\View;
 use App\Models\Receipt;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +38,8 @@ class ReceiptController extends Controller
                 'status' => StatutReceiptEnum::Pending,
             ]
         );
+
+        ExtraireDepensesDuRecu::dispatch($receipt->id);
 
         return redirect()
             ->route('Receipt.index')
