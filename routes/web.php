@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceiptController;
 use App\Jobs\ExtraireDepensesDuRecu;
@@ -28,7 +29,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/receipt/create', [ReceiptController::class, 'create'])->name('Receipt.create');
     Route::post('/receipt', [ReceiptController::class, 'store'])->name('Receipt.store');
     Route::get('/receipt/{recu}', [ReceiptController::class, 'show'])->name('Receipt.show');
+    Route::get('/receipt/{recu}/edit', [ReceiptController::class, 'edit'])->name('Receipt.edit');
+    Route::put('/receipt/{recu}', [ReceiptController::class, 'update'])->name('Receipt.update');
     Route::delete('/recus/{recu}',  [ReceiptController::class, 'destroy'])->name('Receipt.destroy');
+
+    // Expense
+    Route::post('/receipt/{recu}/expense', [ExpenseController::class, 'store'])->name('Expense.store');
+    Route::put('/expense/{expense}', [ExpenseController::class, 'update'])->name('Expense.update');
+    Route::delete('/expense/{expense}', [ExpenseController::class, 'destroy'])->name('Expense.destroy');
 
 });
 

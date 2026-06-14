@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRecieptRequest;
+use App\Http\Requests\UpdateRecieptRequest;
 use App\Enums\StatutReceiptEnum;
+use App\Enums\CategorieExpensesEnum;
 use App\Jobs\ExtraireDepensesDuRecu;
 use Illuminate\Contracts\View\View;
 use App\Models\Receipt;
@@ -15,13 +17,19 @@ class ReceiptController extends Controller
 
     public function index()
     {
-        $receipt = Auth()->user()
-            ->receipt()
-            ->with('expenses')
-            ->latest()
-            ->get();
+        $query = Auth()->user()->receipt()->with('expenses');
 
-        return view('Receipt.index', compact('receipt'));
+        if ($categorie = request('categorie')) {
+            $query->whereHas('expenses', function ($q) use ($categorie) {
+                $q->where('categorie', $categorie);
+            });
+        }
+
+        $receipt = $query->latest()->get();
+        $categories = CategorieExpensesEnum::cases();
+        $activeFilter = request('categorie');
+
+        return view('Receipt.index', compact('receipt', 'categories', 'activeFilter'));
     }
 
 
@@ -48,21 +56,41 @@ class ReceiptController extends Controller
 
     public function show(Receipt $recu): View
     {
-        // Ownership check — user can only see their own receipts.
         abort_if($recu->user_id !== auth()->id(), 403);
 
-        $receipt = $recu->load('expenses');
+        $query = $recu->expenses();
 
-        return View('Receipt.show', compact('receipt'));
+        if ($categorie = request('categorie')) {
+            $query->where('categorie', $categorie);
+        }
+
+        $expenses = $query->get();
+        $receipt = $recu;
+        $categories = CategorieExpensesEnum::cases();
+        $activeFilter = request('categorie');
+
+        return view('Receipt.show', compact('receipt', 'expenses', 'categories', 'activeFilter'));
     }
 
-    // public function edit() {
-    //     return view('Receipt.edit');
-    // }
+    public function edit(Receipt $recu): View
+    {
+        abort_if($recu->user_id !== auth()->id(), 403);
 
-    // public function update(StoreRecieptRequest $request){
+        return view('Receipt.edit', ['receipt' => $recu]);
+    }
 
-    // }
+    public function update(UpdateRecieptRequest $request, Receipt $recu): RedirectResponse
+    {
+        abort_if($recu->user_id !== auth()->id(), 403);
+
+        $recu->update([
+            'source_text' => $request->validated('source_text'),
+        ]);
+
+        return redirect()
+            ->route('Receipt.show', $recu)
+            ->with('message', 'Reçu modifié avec succès.');
+    }
 
     public function destroy(Receipt $recu): RedirectResponse
     {
