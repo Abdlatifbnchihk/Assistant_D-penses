@@ -9,7 +9,7 @@ use RuntimeException;
 class ExtractionService
 {
     private string $apiKey;
-    private string $baseUrl = 'https://api.openai.com/v1';
+    private string $baseUrl = 'https://api.groq.com/openai/v1';
 
     public function __construct()
     {
@@ -52,7 +52,7 @@ PROMPT;
             'Authorization' => 'Bearer ' . $this->apiKey,
             'Content-Type' => 'application/json',
         ])->timeout(60)->post($this->baseUrl . '/chat/completions', [
-            'model' => 'gpt-4o-mini',
+            'model' => 'llama-3.3-70b-versatile',
             'response_format' => ['type' => 'json_object'],
             'messages' => [
                 ['role' => 'system', 'content' => $systemPrompt],

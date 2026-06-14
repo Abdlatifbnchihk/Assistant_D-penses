@@ -52,7 +52,7 @@
                                         </td>
                                         <td class="px-4 py-3 text-gray-700">
                                             @if ($recu->status?->value === 'processed')
-                                                {{ $recu->depenses->count() }} article(s)
+                                                {{ $recu->expenses->count() }} article(s)
                                             @else
                                                 —
                                             @endif
