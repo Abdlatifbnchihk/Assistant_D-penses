@@ -31,7 +31,7 @@ return new class extends Migration {
                 'autre'
             ]);
 
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

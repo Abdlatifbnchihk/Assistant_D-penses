@@ -14,6 +14,8 @@
         ];
     @endphp
 
+    {{-- {{ dd($receipt->expenses) }} --}}
+
     <div class="flex items-center gap-3 mb-6">
         <h1 class="text-xl font-semibold text-gray-900">
             Reçu du {{ $receipt->created_at->format('d/m/Y H:i') }}
@@ -60,18 +62,18 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @foreach ($receipt->depenses as $depense)
+                        @foreach ($receipt->expenses as $expense)
                             <tr>
-                                <td class="px-4 py-3 text-gray-700">{{ $depense->libelle }}</td>
-                                <td class="px-4 py-3 text-gray-700">{{ $depense->quantite }}</td>
-                                <td class="px-4 py-3 text-gray-700">{{ number_format($depense->prix_unitaire, 2) }} MAD</td>
+                                <td class="px-4 py-3 text-gray-700">{{ $expense->libelle }}</td>
+                                <td class="px-4 py-3 text-gray-700">{{ $expense->quantite }}</td>
+                                <td class="px-4 py-3 text-gray-700">{{ number_format($expense->prix_unitaire, 2) }} MAD</td>
                                 <td class="px-4 py-3">
-                                    <span class="text-xs font-medium px-2 py-1 rounded-full {{ $catColors[$depense->categorie->value] }}">
-                                        {{ $depense->categorie->label() }}
+                                    <span class="text-xs font-medium px-2 py-1 rounded-full {{ $catColors[$expense->categorie->value] }}">
+                                        {{ $expense->categorie->label() }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-right font-medium text-gray-900">
-                                    {{ number_format($depense->prix_total, 2) }} MAD
+                                    {{ number_format($expense->prix_total, 2) }} MAD
                                 </td>
                             </tr>
                         @endforeach
