@@ -1,10 +1,4 @@
-# Expense Category Filtering
-
-## Purpose
-
-Enables users to filter expenses and receipts by category, making it easier to review spending patterns and focus on specific types of expenses. Filter controls are styled as stamp-style chips.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Filter expenses by category on receipt detail page
 The system SHALL allow users to filter the expenses table on the receipt show page by category. Filter controls SHALL be styled as stamp-style chips.
