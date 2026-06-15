@@ -167,3 +167,116 @@ branches:
   main: "main"
   feature_prefix: "feature/"
   test_prefix: "test/"
+
+# ──────────────────────────────────────────────────────────
+# UI design system — "corner-store ledger / paper receipt"
+#
+# Rationale: the subject of the app IS the receipt. Instead of a
+# generic SaaS dashboard, every screen is styled like a real
+# till receipt / accounting ledger — paper background, torn-edge
+# "ticket" cards, and rotated rubber-stamp badges for status and
+# category instead of generic colored pills.
+# ──────────────────────────────────────────────────────────
+ui:
+  concept: "Corner-store ledger / paper receipt aesthetic"
+ 
+  tokens:
+    color:
+      page_bg:   "#F2EEE5"
+      paper:     "#FBF8F2"
+      line:      "#E4DDD0"
+      ink:       "#242220"
+      ink_soft:  "#767068"
+      teal:      "#2F5D5A"
+      teal_soft: "#E4EEEC"
+      amber:     "#B6822A"
+      green:     "#4F7A52"
+      red:       "#AE4A35"
+ 
+    type:
+      display: "Fraunces (serif, weights 400/600/700) — headings, ticket titles, stamps"
+      body:    "Inter (400/500/600) — paragraphs, labels, form text"
+      mono:    "IBM Plex Mono (400/500/600) — all numbers: prices, quantities, dates, receipt IDs, nav tabs"
+ 
+    components:
+      ticket: >
+        The signature element. A card with a scalloped/perforated
+        bottom edge (CSS mask + radial-gradient against page_bg),
+        representing a torn receipt. Used for every receipt entry,
+        the submission form, and the expense ledger.
+ 
+      stamp: >
+        Rotated (-3deg), double-bordered badge styled like a rubber
+        ink stamp. Used for Recu status (En attente / Traité / Échoué)
+        and Depense category (Alimentaire / Boissons / Hygiène /
+        Entretien / Autre). Color = currentColor, set per status/category.
+ 
+      lined_paper: >
+        Repeating-linear-gradient background creating ruled lines,
+        used on the receipt textarea (create form) and the source
+        text block (receipt detail) — mimics handwritten ledger paper.
+ 
+      ledger_tab: >
+        Top navigation tabs (Reçus / Dépenses) styled as monospace,
+        uppercase, letter-spaced labels with a teal underline on
+        the active tab — like ledger section dividers.
+ 
+  views:
+    - file: "resources/views/layouts/app.blade.php"
+      description: >
+        Master layout. Defines the full design system: CSS variables,
+        fonts (Fraunces/Inter/IBM Plex Mono), .ticket, .stamp,
+        .lined-paper, .banner, .btn-ink, .btn-ghost. Top bar shows
+        brand mark (receipt icon SVG) and ledger-tab navigation
+        (Reçus / Dépenses) plus logout. Renders flash messages as
+        teal "banner-info" and validation errors as "banner-red".
+ 
+    - file: "resources/views/recus/index.blade.php"
+      description: >
+        US2 — Receipt list. Each Recu renders as a torn-edge ticket
+        showing: receipt number (num font, zero-padded), submission
+        date/time, a one-line status summary, and a rotated status
+        stamp (amber=pending, green=processed, red=failed) in the
+        top-right. Dashed divider at the bottom of each ticket
+        separates "Voir le détail →" and "Supprimer" actions. Empty
+        state is a single centered ticket inviting the first submission.
+ 
+    - file: "resources/views/recus/create.blade.php"
+      description: >
+        US3 — Submission form. A single ticket containing a textarea
+        styled as lined ledger paper (monospace, ruled lines) with
+        placeholder receipt text in Darija-style shorthand. Helper
+        text states the 10–5000 character constraint. Submit button
+        is the primary "btn-ink" (solid teal, monospace uppercase).
+        A note below the ticket explains the async/background
+        processing so the user understands why the page returns
+        immediately.
+ 
+    - file: "resources/views/recus/show.blade.php"
+      description: >
+        US4 — Receipt detail. Rendered as a single full-length ticket
+        with a centered header (brand name, receipt number, datetime,
+        status stamp) — mimicking a real printed receipt header.
+        Pending/failed states show a banner explaining what to do next.
+        Source text is shown in a lined-paper block. Extracted Depense
+        rows are listed with label, "qty x unit price", a small
+        category stamp, and the line total in monospace, followed by
+        a dashed divider and a bold Total row.
+ 
+    - file: "resources/views/depenses/index.blade.php"
+      description: >
+        US8 — Filterable expense ledger. Category filter is a row of
+        stamp-style chips ("Toutes" + one per CategorieDepenseEnum);
+        the active filter is fully colored, inactive ones are dimmed
+        (opacity .4) — so the active category reads like a stamp that
+        was just pressed. Below, a single ticket lists every matching
+        Depense (label, qty x unit price, link to its parent receipt,
+        category stamp, line total) ending in a Total row that reflects
+        the current filter. Empty state offers a link back to "Toutes".
+ 
+  accessibility:
+    - "All interactive elements have visible focus rings (2px solid teal, 2px offset)."
+    - "Ticket hover lift/shadow is wrapped in @media (prefers-reduced-motion: no-preference)."
+    - "Status and category are conveyed by both color AND text label inside the stamp — never color alone."
+    - "Color contrast: ink on paper and teal on paper both exceed WCAG AA for body text."
+ 

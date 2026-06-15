@@ -1,3 +1,292 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Design Tokens ── */
+:root {
+  --color-page-bg: #F2EEE5;
+  --color-paper: #FBF8F2;
+  --color-line: #E4DDD0;
+  --color-ink: #242220;
+  --color-ink-soft: #767068;
+  --color-teal: #2F5D5A;
+  --color-teal-soft: #E4EEEC;
+  --color-amber: #B6822A;
+  --color-green: #4F7A52;
+  --color-red: #AE4A35;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+/* ── Base ── */
+body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background-color: var(--color-page-bg);
+}
+
+/* ── Ticket Card ── */
+.ticket {
+  background-color: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: 6px;
+  position: relative;
+  padding: 1.5rem;
+}
+
+.ticket::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 16px;
+  background: radial-gradient(circle, var(--color-page-bg) 5px, transparent 5px) repeat-x;
+  background-size: 16px 16px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ticket {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .ticket:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* ── Stamp Badge ── */
+.stamp {
+  display: inline-block;
+  transform: rotate(-3deg);
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+}
+
+.stamp-amber {
+  color: var(--color-amber);
+  border-color: var(--color-amber);
+}
+
+.stamp-green {
+  color: var(--color-green);
+  border-color: var(--color-green);
+}
+
+.stamp-red {
+  color: var(--color-red);
+  border-color: var(--color-red);
+}
+
+.stamp-teal {
+  color: var(--color-teal);
+  border-color: var(--color-teal);
+}
+
+/* ── Lined Paper ── */
+.lined-paper {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    var(--color-line) 27px,
+    var(--color-line) 28px
+  );
+  background-color: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 28px;
+  color: var(--color-ink);
+  white-space: pre-wrap;
+}
+
+/* ── Buttons ── */
+.btn-ink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--color-teal);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.btn-ink:hover {
+  background-color: #244a48;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  background-color: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px dashed var(--color-line);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-ghost:hover {
+  border-color: var(--color-ink-soft);
+  color: var(--color-ink);
+}
+
+/* ── Banners ── */
+.banner-info {
+  background-color: var(--color-teal-soft);
+  border: 1px solid var(--color-teal);
+  color: var(--color-teal);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.banner-red {
+  background-color: #fdf2f2;
+  border: 1px solid var(--color-red);
+  color: var(--color-red);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.banner-amber {
+  background-color: #fdf8ed;
+  border: 1px solid var(--color-amber);
+  color: var(--color-amber);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+/* ── Focus Rings ── */
+*:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+}
+
+/* ── Ledger Tabs ── */
+.ledger-tab {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 1rem;
+  color: var(--color-ink-soft);
+  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ledger-tab:hover {
+  color: var(--color-ink);
+}
+
+.ledger-tab.active {
+  color: var(--color-teal);
+  border-bottom-color: var(--color-teal);
+}
+
+/* ── Stamp Filter Chips ── */
+.stamp-chip {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1.5px solid var(--color-teal);
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+}
+
+.stamp-chip.active {
+  background-color: var(--color-teal);
+  color: #fff;
+  opacity: 1;
+}
+
+.stamp-chip:not(.active) {
+  background-color: transparent;
+  color: var(--color-teal);
+  opacity: 0.4;
+}
+
+.stamp-chip:not(.active):hover {
+  opacity: 0.7;
+}
+
+/* ── Typography Helpers ── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-num {
+  font-family: var(--font-mono);
+}
+
+/* ── Dashed Divider ── */
+.dashed-divider {
+  border: none;
+  border-top: 1px dashed var(--color-line);
+  margin: 1rem 0;
+}
+
+/* ── Inputs ── */
+input[type="text"],
+input[type="number"],
+select,
+textarea {
+  font-family: var(--font-body);
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  background-color: #fff;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-teal);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(47, 93, 90, 0.15);
+}

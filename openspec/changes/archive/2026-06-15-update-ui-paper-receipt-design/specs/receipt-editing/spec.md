@@ -1,10 +1,4 @@
-# Receipt Editing
-
-## Purpose
-
-Allows users to edit receipt source text and manage individual expenses (add, edit, delete) on processed receipts. Provides manual correction capabilities when AI extraction produces errors. All views use the paper receipt design system (ticket cards, stamp badges, lined paper textarea).
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: User can edit receipt source text
 The system SHALL allow users to edit the `source_text` of a processed receipt via an edit form. All views SHALL use the paper receipt design system (ticket cards, stamp badges, lined paper textarea).

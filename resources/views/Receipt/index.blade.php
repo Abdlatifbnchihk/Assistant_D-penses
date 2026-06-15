@@ -1,96 +1,92 @@
 <x-app-layout>
-
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-semibold text-gray-900">Mes reçus</h1>
-        <a href="{{ route('Receipt.create') }}"
-            class="bg-indigo-600 text-white text-sm font-medium px-4 py-2 rounded-md hover:bg-indigo-700">
-            + Soumettre un reçu
+    <div class="mb-6 flex items-center justify-between">
+        <h1 class="font-display text-2xl font-bold" style="color: var(--color-ink);">Mes reçus</h1>
+        <a href="{{ route('Receipt.create') }}" class="btn-ink">
+            + Nouveau reçu
         </a>
     </div>
 
     @if (count($categories))
-        <form method="GET" action="{{ route('Receipt.index') }}" class="mb-4 flex items-center gap-2">
-            <label for="categorie-filter-index" class="text-xs text-gray-500">Filtrer par catégorie :</label>
-            <select name="categorie" id="categorie-filter-index"
-                class="text-xs border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                onchange="this.form.submit()">
-                <option value="">Toutes</option>
-                @foreach ($categories as $cat)
-                    <option value="{{ $cat->value }}" {{ $activeFilter === $cat->value ? 'selected' : '' }}>
-                        {{ $cat->label() }}
-                    </option>
-                @endforeach
-            </select>
-        </form>
+        <div class="flex items-center gap-2 mb-6 flex-wrap">
+            <a href="{{ route('Receipt.index') }}"
+               class="stamp-chip {{ !$activeFilter ? 'active' : '' }}">
+                Toutes
+            </a>
+            @foreach ($categories as $cat)
+                <a href="{{ route('Receipt.index', ['categorie' => $cat->value]) }}"
+                   class="stamp-chip {{ $activeFilter === $cat->value ? 'active' : '' }}">
+                    {{ $cat->label() }}
+                </a>
+            @endforeach
+        </div>
     @endif
 
     @if ($receipt->isEmpty())
-        <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
-            <p class="text-gray-500 text-sm">Aucun reçu pour le moment.</p>
-            <a href="{{ route('Receipt.create') }}"
-                class="text-indigo-600 text-sm font-medium hover:underline mt-2 inline-block">
+        <div class="ticket max-w-md mx-auto text-center" style="padding: 3rem;">
+            <svg class="w-12 h-12 mx-auto mb-4" style="color: var(--color-line);" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+            </svg>
+            <p style="color: var(--color-ink-soft); font-size: 0.875rem;">Aucun reçu pour le moment.</p>
+            <a href="{{ route('Receipt.create') }}" class="btn-ghost mt-4 inline-block">
                 Soumettre votre premier reçu
             </a>
         </div>
     @else
-        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-                    <tr>
-                        <th class="text-left px-4 py-3">Date</th>
-                        <th class="text-left px-4 py-3">Statut</th>
-                        <th class="text-left px-4 py-3">Dépenses extraites</th>
-                        <th class="text-right px-4 py-3">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    @foreach ($receipt as $recu)
-                        <tr>
-                            <td class="px-4 py-3 text-gray-700">
+        <div class="space-y-4">
+            @foreach ($receipt as $recu)
+                <div class="ticket">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <span class="font-num text-xs font-semibold" style="color: var(--color-ink-soft);">
+                                #{{ str_pad($recu->id, 4, '0', STR_PAD_LEFT) }}
+                            </span>
+                            <span class="font-num text-xs ml-2" style="color: var(--color-ink-soft);">
                                 {{ $recu->created_at->format('d/m/Y H:i') }}
-                            </td>
-                            <td class="px-4 py-3">
-                                @php
-                                    $colors = [
-                                        'pending' => 'bg-amber-100 text-amber-800',
-                                        'processed' => 'bg-green-100 text-green-800',
-                                        'failed' => 'bg-red-100 text-red-800',
-                                    ];
-                                @endphp
-                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $colors[$recu->status?->value] ?? 'bg-gray-100 text-gray-700' }}">
-                                    {{ $recu->status?->label() }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 text-gray-700">
-                                @if ($recu->status?->value === 'processed')
-                                    {{ $recu->expenses->count() }} article(s)
-                                @else
-                                    —
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 text-right space-x-3">
-                                <a href="{{ route('Receipt.show', $recu) }}" class="text-indigo-600 hover:underline">
-                                    Voir
-                                </a>
-                                @if ($recu->status?->value === 'processed')
-                                    <a href="{{ route('Receipt.edit', $recu) }}" class="text-indigo-600 hover:underline">
-                                        Modifier
-                                    </a>
-                                @endif
-                                <form action="{{ route('Receipt.destroy', $recu) }}" method="POST" class="inline"
-                                    onsubmit="return confirm('Supprimer ce reçu ?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:underline">
-                                        Supprimer
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                            </span>
+                        </div>
+                        @php
+                            $stampClass = match($recu->status?->value) {
+                                'pending' => 'stamp-amber',
+                                'processed' => 'stamp-green',
+                                'failed' => 'stamp-red',
+                                default => '',
+                            };
+                        @endphp
+                        <span class="stamp {{ $stampClass }}">
+                            {{ $recu->status?->label() }}
+                        </span>
+                    </div>
+
+                    <div class="mb-3" style="color: var(--color-ink-soft); font-size: 0.875rem;">
+                        @if ($recu->status?->value === 'processed')
+                            {{ $recu->expenses->count() }} article(s)
+                        @else
+                            En attente de traitement...
+                        @endif
+                    </div>
+
+                    <hr class="dashed-divider">
+
+                    <div class="flex items-center gap-4">
+                        <a href="{{ route('Receipt.show', $recu) }}" class="btn-ghost text-xs">
+                            Voir le détail →
+                        </a>
+                        @if ($recu->status?->value === 'processed')
+                            <a href="{{ route('Receipt.edit', $recu) }}" class="btn-ghost text-xs">
+                                Modifier
+                            </a>
+                        @endif
+                        <form action="{{ route('Receipt.destroy', $recu) }}" method="POST" class="ml-auto"
+                            onsubmit="return confirm('Supprimer ce reçu ?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-ghost text-xs" style="color: var(--color-red); border-color: var(--color-red);">
+                                Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @endforeach
         </div>
     @endif
-
 </x-app-layout>
