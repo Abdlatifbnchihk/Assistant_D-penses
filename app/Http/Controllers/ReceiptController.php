@@ -102,4 +102,9 @@ class ReceiptController extends Controller
             ->route('Receipt.index')
             ->with('message', 'Reçu supprimé.');
     }
+
+
+    function codeRabbitTest(){
+        return 'hello world'
+    }
 }
