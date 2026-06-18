@@ -105,6 +105,7 @@ class ReceiptController extends Controller
 
 
     function codeRabbitTest(){
-        return 'hello world'
+        echo $name;
+        return 'hello world';
     }
 }
