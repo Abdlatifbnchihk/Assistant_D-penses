@@ -103,8 +103,9 @@ class ReceiptController extends Controller
             ->with('message', 'Reçu supprimé.');
     }
 
-    function codeRabbit(){
-        echo $name
+
+    function codeRabbitTest(){
+        echo $name;
         return 'hello world';
     }
 }
